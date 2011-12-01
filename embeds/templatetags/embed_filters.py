@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 from hashlib import md5
+import logging
 
 from django import template
 from django.core.cache import cache
@@ -14,6 +15,8 @@ register = template.Library()
 EMBED_REGEX = re.compile(r'embed:\s*(https?://[\w\d:#@%/;$()~_?\+\-=\\\.&]+)', re.I)
 USER_AGENT = 'Mozilla/5.0 (compatible; django-embedly/0.2; ' \
         '+http://github.com/BayCitizen/)'
+LOG = logging.getLogger(__file__)
+
 
 @register.filter
 def embedly(html, arg=None):
@@ -43,7 +46,10 @@ def embed_replace(match, maxwidth=None):
             cache.set(key, html)
             return html
         except SavedEmbed.DoesNotExist:
-            return 'Error embedding %s' % url
+            err_code = (oembed.data['error_code']
+                        if 'error_code' in oembed.data else 'Unknown')
+            LOG.warn('Error fetching %s (%s)', url, err_code)
+            return url
 
     # save result to database
     row, created = SavedEmbed.objects.get_or_create(url=url, maxwidth=maxwidth,
