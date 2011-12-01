@@ -8,7 +8,7 @@ OEMBED_TYPES = (
 )
 
 class SavedEmbed(models.Model):
-    url = models.URLField()
+    url = models.URLField(max_length=2000)
     maxwidth = models.SmallIntegerField(null=True, blank=True)
     type = models.CharField(max_length=10, choices=OEMBED_TYPES)
     html = models.TextField(blank=True)
