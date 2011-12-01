@@ -50,8 +50,11 @@ def embed_replace(match, maxwidth=None):
                 defaults={'type': oembed.type})
 
     if oembed.type == 'photo':
-        html = '<img src="%s" width="%s" height="%s" />' % (oembed.url,
-                oembed.width, oembed.height)
+        html = '<img src="%s" ' % oembed.url
+        if maxwidth:
+            html += 'width="%s" />' % maxwidth
+        else:
+            html += 'width="%s" height="%s" />' % (oembed.width, oembed.height)
     else:
         html = oembed.html
 
